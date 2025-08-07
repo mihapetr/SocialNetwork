@@ -32,7 +32,7 @@ public class Profile implements Serializable {
     @Column(name = "picture_content_type")
     private String pictureContentType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "profile")
+@OneToMany(fetch = FetchType.LAZY, mappedBy = "profile", cascade = { CascadeType.REMOVE })
     @JsonIgnoreProperties(value = { "comments", "user", "profile" }, allowSetters = true)
     private Set<Post> posts = new HashSet<>();
 
@@ -299,5 +299,9 @@ public class Profile implements Serializable {
             ", picture='" + getPicture() + "'" +
             ", pictureContentType='" + getPictureContentType() + "'" +
             "}";
+    }
+
+    void befriend( Profile other ){
+
     }
 }

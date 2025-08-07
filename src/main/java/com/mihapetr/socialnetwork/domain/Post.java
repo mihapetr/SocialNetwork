@@ -37,7 +37,7 @@ public class Post implements Serializable {
     @Column(name = "time")
     private ZonedDateTime time;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "post")
+@OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = { CascadeType.REMOVE })
     @JsonIgnoreProperties(value = { "parent", "user", "post", "profile" }, allowSetters = true)
     private Set<Comment> comments = new HashSet<>();
 
@@ -202,5 +202,9 @@ public class Post implements Serializable {
             ", description='" + getDescription() + "'" +
             ", time='" + getTime() + "'" +
             "}";
+    }
+
+    void comment( String content ){
+
     }
 }

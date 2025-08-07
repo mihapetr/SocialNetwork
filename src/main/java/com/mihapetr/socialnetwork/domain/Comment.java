@@ -22,7 +22,7 @@ public class Comment implements Serializable {
     private Long id;
 
     @JsonIgnoreProperties(value = { "user", "comment", "chat" }, allowSetters = true)
-    @OneToOne(fetch = FetchType.LAZY, optional = false)
+@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = { CascadeType.REMOVE, CascadeType.PERSIST })
     @NotNull
     @JoinColumn(unique = true)
     private Message parent;

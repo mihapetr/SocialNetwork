@@ -183,4 +183,8 @@ public class Chat implements Serializable {
             ", accepted='" + getAccepted() + "'" +
             "}";
     }
+
+    void message( String content ){
+
+    }
 }
