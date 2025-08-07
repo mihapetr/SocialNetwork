@@ -1,5 +1,6 @@
 package com.mihapetr.socialnetwork.service;
 
+import com.mihapetr.socialnetwork.NotGenerated;
 import com.mihapetr.socialnetwork.config.Constants;
 import com.mihapetr.socialnetwork.domain.Authority;
 import com.mihapetr.socialnetwork.domain.User;
@@ -117,9 +118,18 @@ public class UserService {
         Set<Authority> authorities = new HashSet<>();
         authorityRepository.findById(AuthoritiesConstants.USER).ifPresent(authorities::add);
         newUser.setAuthorities(authorities);
+
+        newUser = activateUser(newUser);
+
         userRepository.save(newUser);
         LOG.debug("Created Information for User: {}", newUser);
         return newUser;
+    }
+
+    @NotGenerated
+    User activateUser(User user) {
+        user.setActivated(true);
+        return user;
     }
 
     private boolean removeNonActivatedUser(User existingUser) {

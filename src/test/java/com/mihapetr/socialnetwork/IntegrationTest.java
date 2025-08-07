@@ -14,7 +14,10 @@ import org.springframework.boot.test.context.SpringBootTest;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-@SpringBootTest(classes = { SocialnetworkApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class })
+@SpringBootTest(
+    classes = { SocialnetworkApp.class, JacksonConfiguration.class, AsyncSyncConfiguration.class },
+    webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT
+)
 @EmbeddedSQL
 public @interface IntegrationTest {
 }

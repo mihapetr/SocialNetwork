@@ -1,10 +1,15 @@
 
 package com.mihapetr.socialnetwork.cucumber.stepdefs;
 
+import io.cucumber.java.Before;
 import io.cucumber.java.en.*;
 
-public class Chat_with_Friends {
+public class Chat_with_Friends extends Common {
 
+    @Before
+    public void before() {
+        setup();
+    }
 
 	@Given("user is logged in")
 	public void user_is_logged_in() {
