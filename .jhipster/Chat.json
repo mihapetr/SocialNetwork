@@ -1,0 +1,41 @@
+{
+  "annotations": {
+    "changelogDate": "20250807161412"
+  },
+  "applications": ["socialnetwork"],
+  "fields": [
+    {
+      "fieldName": "initiatorName",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "accepted",
+      "fieldType": "Boolean"
+    }
+  ],
+  "name": "Chat",
+  "relationships": [
+    {
+      "otherEntityName": "message",
+      "otherEntityRelationshipName": "chat",
+      "relationshipName": "chat",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "profile",
+      "otherEntityRelationshipName": "chat",
+      "relationshipName": "profile",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no"
+}

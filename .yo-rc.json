@@ -1,0 +1,25 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "baseName": "socialnetwork",
+    "buildTool": "maven",
+    "cacheProvider": "no",
+    "clientFramework": "angular",
+    "clientTheme": "none",
+    "databaseType": "sql",
+    "devDatabaseType": "mariadb",
+    "enableTranslation": false,
+    "entities": ["Profile", "Post", "Comment", "Chat", "Message"],
+    "jhipsterVersion": "8.8.0",
+    "jwtSecretKey": "M2MzMzg5YThkOTJmNWJhNWExNDk2OTk1NTk3NjkyMmU4MGI2OTg4OTk5ZDY4YjZjZGIxYzk5ODllZTFiZjVlYzdhM2Y2NjFjNGYxNmI2NDg3Y2ExN2YzZmYzZWUyNjFmZDVmZWIwNTVjOTU4MjJlMzc5ZGU3ZjA0MjY0NjMwNzI=",
+    "lastLiquibaseTimestamp": 1754583312000,
+    "microfrontends": [],
+    "nativeLanguage": "en",
+    "packageName": "com.mihapetr.socialnetwork",
+    "prodDatabaseType": "mariadb",
+    "reactive": false,
+    "testFrameworks": ["cucumber", "cypress"],
+    "withAdminUi": true
+  }
+}

@@ -1,0 +1,88 @@
+application {
+	config {
+		applicationType monolith
+		authenticationType jwt
+		baseName socialnetwork
+		buildTool maven
+		cacheProvider no
+		clientFramework angular
+		clientTheme none
+		databaseType sql
+		devDatabaseType mariadb
+		enableTranslation false
+		jhipsterVersion "8.8.0"
+		microfrontends []
+		nativeLanguage en
+		packageName com.mihapetr.socialnetwork
+		prodDatabaseType mariadb
+		reactive false
+		testFrameworks [cucumber, cypress]
+		withAdminUi true
+	}
+
+	entities *
+}
+
+entity Profile {
+  status String
+  picture ImageBlob
+  /* methods
+  void befriend( Profile other )
+  */
+}
+entity Post {
+  image ImageBlob
+  description String
+  time ZonedDateTime
+  /* methods
+  void comment( String content )
+  */
+}
+entity Comment {
+  /* methods
+  */
+}
+entity Chat {
+  initiatorName String
+  accepted Boolean
+  /* methods
+  void message( String content )
+  */
+}
+entity Message {
+  senderName String
+  content String
+  time ZonedDateTime
+  /* methods
+  */
+}
+relationship ManyToMany {
+  Profile{other} to Profile{profile}
+}
+relationship OneToMany {
+  @OnDelete("CASCADE") Profile{post} to Post{profile required}
+}
+relationship OneToMany {
+  @OnDelete("CASCADE") Post{comment} to Comment{post required}
+}
+relationship OneToOne {
+  @OnDelete("CASCADE") /*@OnPersist("CASCADE")*/ Comment{parent required} to Message{comment}
+}
+relationship ManyToMany {
+  Profile{chat} to Chat{profile}
+}
+relationship OneToMany {
+  Chat{chat} to Message{chat}
+}
+relationship OneToMany {
+  Profile{comment} to Comment{profile}
+}
+
+
+relationship ManyToOne {
+	Profile{user} to User with builtInEntity
+	Post{user} to User with builtInEntity
+	Comment{user} to User with builtInEntity
+	Chat{user} to User with builtInEntity
+	Message{user} to User with builtInEntity
+}

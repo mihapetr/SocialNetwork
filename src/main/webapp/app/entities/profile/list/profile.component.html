@@ -1,0 +1,154 @@
+<div>
+  <h2 id="page-heading" data-cy="ProfileHeading">
+    <span>Profiles</span>
+
+    <div class="d-flex justify-content-end">
+      <button class="btn btn-info me-2" (click)="load()" [disabled]="isLoading">
+        <fa-icon icon="sync" [animation]="isLoading ? 'spin' : undefined"></fa-icon>
+        <span>Refresh list</span>
+      </button>
+
+      <button
+        id="jh-create-entity"
+        data-cy="entityCreateButton"
+        class="btn btn-primary jh-create-entity create-profile"
+        [routerLink]="['/profile/new']"
+      >
+        <fa-icon icon="plus"></fa-icon>
+        <span>Create a new Profile</span>
+      </button>
+    </div>
+  </h2>
+
+  <jhi-alert-error></jhi-alert-error>
+
+  <jhi-alert></jhi-alert>
+
+  @if (profiles().length === 0) {
+    <div class="alert alert-warning" id="no-result">
+      <span>No Profiles found</span>
+    </div>
+  } @else {
+    <div class="table-responsive table-entities" id="entities">
+      <table class="table table-striped" aria-describedby="page-heading">
+        <thead>
+          <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
+            <th scope="col" jhiSortBy="id">
+              <div class="d-flex">
+                <span>ID</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="status">
+              <div class="d-flex">
+                <span>Status</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="picture">
+              <div class="d-flex">
+                <span>Picture</span>
+
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="user.id">
+              <div class="d-flex">
+                <span>User</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="other.id">
+              <div class="d-flex">
+                <span>Other</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="chat.id">
+              <div class="d-flex">
+                <span>Chat</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col" jhiSortBy="profile.id">
+              <div class="d-flex">
+                <span>Profile</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (profile of profiles(); track trackId(profile)) {
+            <tr data-cy="entityTable">
+              <td>
+                <a [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a>
+              </td>
+              <td>{{ profile.status }}</td>
+              <td>
+                @if (profile.picture) {
+                  <a (click)="openFile(profile.picture, profile.pictureContentType)">
+                    <img
+                      [src]="'data:' + profile.pictureContentType + ';base64,' + profile.picture"
+                      style="max-height: 30px"
+                      alt="profile"
+                    />
+                  </a>
+                  <span>{{ profile.pictureContentType }}, {{ byteSize(profile.picture) }}</span>
+                }
+              </td>
+              <td>
+                {{ profile.user?.id }}
+              </td>
+              <td>
+                @for (other of profile.others; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/profile', other.id, 'view']">{{ other.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td>
+                @for (chat of profile.chats; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td>
+                @for (profile of profile.profiles; track $index; let last = $last) {
+                  <span>
+                    <a class="form-control-static" [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a
+                    >{{ last ? '' : ', ' }}
+                  </span>
+                }
+              </td>
+              <td class="text-end">
+                <div class="btn-group">
+                  <a [routerLink]="['/profile', profile.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                    <fa-icon icon="eye"></fa-icon>
+                    <span class="d-none d-md-inline">View</span>
+                  </a>
+
+                  <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                    <fa-icon icon="pencil-alt"></fa-icon>
+                    <span class="d-none d-md-inline">Edit</span>
+                  </a>
+
+                  <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                    <fa-icon icon="times"></fa-icon>
+                    <span class="d-none d-md-inline">Delete</span>
+                  </button>
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  }
+</div>

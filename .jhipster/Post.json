@@ -1,0 +1,49 @@
+{
+  "annotations": {
+    "changelogDate": "20250807161212"
+  },
+  "applications": ["socialnetwork"],
+  "fields": [
+    {
+      "fieldName": "image",
+      "fieldType": "ImageBlob"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "time",
+      "fieldType": "ZonedDateTime"
+    }
+  ],
+  "name": "Post",
+  "relationships": [
+    {
+      "otherEntityName": "comment",
+      "otherEntityRelationshipName": "post",
+      "relationshipName": "comment",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "user",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "options": {
+        "onDelete": "CASCADE"
+      },
+      "otherEntityName": "profile",
+      "otherEntityRelationshipName": "post",
+      "relationshipName": "profile",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no"
+}

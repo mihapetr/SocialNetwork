@@ -1,0 +1,58 @@
+<div class="d-flex justify-content-center">
+  <div class="col-8">
+    @if (comment(); as commentRef) {
+      <div>
+        <h2 data-cy="commentDetailsHeading"><span>Comment</span></h2>
+
+        <hr />
+
+        <jhi-alert-error></jhi-alert-error>
+
+        <jhi-alert></jhi-alert>
+
+        <dl class="row-md jh-entity-details">
+          <dt><span>ID</span></dt>
+          <dd>
+            <span>{{ commentRef.id }}</span>
+          </dd>
+          <dt><span>Parent</span></dt>
+          <dd>
+            @if (comment()!.parent) {
+              <div>
+                <a [routerLink]="['/message', comment()!.parent?.id, 'view']">{{ commentRef.parent?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>User</span></dt>
+          <dd>
+            <span>{{ commentRef.user?.id }}</span>
+          </dd>
+          <dt><span>Post</span></dt>
+          <dd>
+            @if (comment()!.post) {
+              <div>
+                <a [routerLink]="['/post', comment()!.post?.id, 'view']">{{ commentRef.post?.id }}</a>
+              </div>
+            }
+          </dd>
+          <dt><span>Profile</span></dt>
+          <dd>
+            @if (comment()!.profile) {
+              <div>
+                <a [routerLink]="['/profile', comment()!.profile?.id, 'view']">{{ commentRef.profile?.id }}</a>
+              </div>
+            }
+          </dd>
+        </dl>
+
+        <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+          <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
+        </button>
+
+        <button type="button" [routerLink]="['/comment', commentRef.id, 'edit']" class="btn btn-primary">
+          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+        </button>
+      </div>
+    }
+  </div>
+</div>
