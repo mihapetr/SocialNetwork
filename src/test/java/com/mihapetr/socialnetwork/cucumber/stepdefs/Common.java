@@ -1,5 +1,8 @@
 package com.mihapetr.socialnetwork.cucumber.stepdefs;
 
+import com.mihapetr.socialnetwork.domain.Profile;
+import com.mihapetr.socialnetwork.domain.User;
+import com.mihapetr.socialnetwork.repository.ProfileRepository;
 import com.mihapetr.socialnetwork.repository.UserRepository;
 import com.mihapetr.socialnetwork.service.UserService;
 import com.mihapetr.socialnetwork.service.dto.AdminUserDTO;
@@ -19,7 +22,7 @@ public class Common {
 
     @Autowired
     protected RestClient restClient;
-    RestClient.ResponseSpec res;
+    RestClient.ResponseSpec responseSpec;
 
     @Autowired
     protected UserService userService;
@@ -27,7 +30,13 @@ public class Common {
     @Autowired
     UserRepository userRepository;
 
+    @Autowired
+    ProfileRepository profileRepository;
+
     protected String token;
+
+    User user;
+    protected Profile mainProfile;
 
     protected final String existingLogin = "existinglogin";
     protected final String existingPassword = "existingpassword";
@@ -37,7 +46,10 @@ public class Common {
             AdminUserDTO user = new AdminUserDTO();
             user.setLogin(existingLogin);
             user.setEmail("existing@email.com");
-            userService.registerUser(user, existingPassword);
+            User createdUser = userService.registerUser(user, existingPassword);
+
+            Profile profile = new Profile().user(createdUser).status("I am alive!");
+            mainProfile = profileRepository.save(profile);
         }
     }
 
@@ -56,5 +68,15 @@ public class Common {
         loginForm.setUsername(username);
         loginForm.setPassword(password);
         return signIn(loginForm).getBody().getIdToken();
+    }
+
+    protected Profile createUserProfile(String login) {
+        AdminUserDTO user = new AdminUserDTO();
+        user.setLogin(login);
+        user.setEmail(login + "@email.com");
+        User createdUser = userService.registerUser(user, login + "pass");
+
+        Profile profile = new Profile().user(createdUser).status("I am alive!");
+        return profileRepository.save(profile);
     }
 }

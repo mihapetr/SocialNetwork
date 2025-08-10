@@ -1,7 +1,12 @@
 package com.mihapetr.socialnetwork.web.rest;
 
+import com.mihapetr.socialnetwork.NotGenerated;
 import com.mihapetr.socialnetwork.domain.Chat;
+import com.mihapetr.socialnetwork.domain.Message;
+import com.mihapetr.socialnetwork.domain.Profile;
 import com.mihapetr.socialnetwork.repository.ChatRepository;
+import com.mihapetr.socialnetwork.repository.ProfileRepository;
+import com.mihapetr.socialnetwork.security.SecurityUtils;
 import com.mihapetr.socialnetwork.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -33,9 +38,17 @@ public class ChatResource {
     private String applicationName;
 
     private final ChatRepository chatRepository;
+    private final ProfileResource profileResource;
+    private final MessageResource messageResource;
+    private final ProfileRepository profileRepository;
 
-    public ChatResource(ChatRepository chatRepository) {
+    @NotGenerated
+    public ChatResource(ChatRepository chatRepository, ProfileResource profileResource, MessageResource messageResource,
+                        ProfileRepository profileRepository) {
         this.chatRepository = chatRepository;
+        this.profileResource = profileResource;
+        this.messageResource = messageResource;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -134,6 +147,46 @@ public class ChatResource {
         );
     }
 
+    @NotGenerated
+    @PostMapping("/request-chat-with-profile/{id}")
+    public ResponseEntity<Chat> requestFriend(@PathVariable(value="id") Long id) throws URISyntaxException {
+
+        String currentLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
+        Profile currentProfile = profileRepository.findByUserIsCurrentUser().stream().findFirst().orElse(null);
+        Profile requestedProfile = profileResource.getProfile(id).getBody();
+
+        Message message = new Message().content("I would like to chat");
+        message = messageResource.createMessage(message).getBody(); // will have initiatorName and time data
+
+        Chat chat = new Chat().initiatorName(currentLogin).accepted(false).addChat(message)
+            .addProfile(currentProfile).addProfile(requestedProfile);
+        return createChat(chat);
+    }
+
+    @NotGenerated
+    @PatchMapping(value = "/{id}/accept")
+    public ResponseEntity<Profile> acceptChat(@PathVariable(value = "id", required = false) final Long id)
+        throws URISyntaxException {
+        Chat chat = chatRepository.findById(id).orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        chat.accepted(true);
+        chatRepository.save(chat);
+        Profile requesterProfile = profileResource.getProfileByLogin(chat.getInitiatorName());
+        Profile currentProfile = profileResource.getCurrentUserProfile().getBody();
+        currentProfile.befriend(requesterProfile);
+        return profileResource.partialUpdateProfile(currentProfile.getId(), currentProfile);
+    }
+
+    @NotGenerated
+    @PatchMapping(value = "/{id}/message", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<Message> messageInChat(@PathVariable(value = "id", required = false) final Long id, @RequestBody Message message)
+        throws URISyntaxException {
+        Chat chat = chatRepository.findById(id).orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        ResponseEntity<Message> messageResponse = messageResource.createMessage(message);
+        chat.addChat(messageResponse.getBody());
+        partialUpdateChat(id, chat);
+        return messageResponse;
+    }
+
     /**
      * {@code GET  /chats} : get all the chats.
      *
@@ -142,7 +195,7 @@ public class ChatResource {
     @GetMapping("")
     public List<Chat> getAllChats() {
         LOG.debug("REST request to get all Chats");
-        return chatRepository.findAll();
+        return chatRepository.findAllByCurrentProfile(SecurityUtils.getCurrentUserLogin().orElseThrow());
     }
 
     /**

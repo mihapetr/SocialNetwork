@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -53,6 +54,7 @@ public class PostResource {
         if (post.getId() != null) {
             throw new BadRequestAlertException("A new post cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        post.time(ZonedDateTime.now());
         post = postRepository.save(post);
         return ResponseEntity.created(new URI("/api/posts/" + post.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, post.getId().toString()))

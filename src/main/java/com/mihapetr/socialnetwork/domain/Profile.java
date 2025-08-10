@@ -1,10 +1,12 @@
 package com.mihapetr.socialnetwork.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.mihapetr.socialnetwork.NotGenerated;
 import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * A Profile.
@@ -40,7 +42,7 @@ public class Profile implements Serializable {
     @JsonIgnoreProperties(value = { "parent", "user", "post", "profile" }, allowSetters = true)
     private Set<Comment> comments = new HashSet<>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     private User user;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -49,7 +51,7 @@ public class Profile implements Serializable {
         joinColumns = @JoinColumn(name = "profile_id"),
         inverseJoinColumns = @JoinColumn(name = "other_id")
     )
-    @JsonIgnoreProperties(value = { "posts", "comments", "user", "others", "chats", "profiles" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "posts", "comments", "others", "chats", "profiles" }, allowSetters = true)
     private Set<Profile> others = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -62,7 +64,7 @@ public class Profile implements Serializable {
     private Set<Chat> chats = new HashSet<>();
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "others")
-    @JsonIgnoreProperties(value = { "posts", "comments", "user", "others", "chats", "profiles" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "posts", "comments", "others", "chats", "profiles" }, allowSetters = true)
     private Set<Profile> profiles = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -298,10 +300,18 @@ public class Profile implements Serializable {
             ", status='" + getStatus() + "'" +
             ", picture='" + getPicture() + "'" +
             ", pictureContentType='" + getPictureContentType() + "'" +
+            ", others=" + ((others != null) ? others.stream().map(
+                profile -> {return profile.getId() + "";}
+            ).toList().toString() : "") +
+            ", profiles=" + ((profiles != null) ? profiles.stream().map(
+            profile -> {return profile.getId() + "";}
+            ).toList().toString() : "") +
+            ", user= " + user +
             "}";
     }
 
-    void befriend( Profile other ){
-
+    @NotGenerated
+    public void befriend( Profile other ){
+        addOther(other);
     }
 }

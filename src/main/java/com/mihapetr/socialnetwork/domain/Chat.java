@@ -28,7 +28,7 @@ public class Chat implements Serializable {
     @Column(name = "accepted")
     private Boolean accepted;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "chat")
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "chat")
     @JsonIgnoreProperties(value = { "user", "comment", "chat" }, allowSetters = true)
     private Set<Message> chats = new HashSet<>();
 

@@ -17,9 +17,13 @@ import org.springframework.web.client.HttpClientErrorException;
 
 public class Account extends Common{
 
+    static boolean done  = false;
+
     @Before
     public void before() {
+        if (done) return;
         setup();
+        done = true;
     }
 
     private final String newLogin = "myUsername";

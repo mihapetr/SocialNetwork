@@ -1,7 +1,13 @@
 package com.mihapetr.socialnetwork.web.rest;
 
+import com.mihapetr.socialnetwork.NotGenerated;
+import com.mihapetr.socialnetwork.domain.Chat;
+import com.mihapetr.socialnetwork.domain.Message;
 import com.mihapetr.socialnetwork.domain.Profile;
+import com.mihapetr.socialnetwork.repository.ChatRepository;
 import com.mihapetr.socialnetwork.repository.ProfileRepository;
+import com.mihapetr.socialnetwork.security.SecurityUtils;
+import com.mihapetr.socialnetwork.service.UserService;
 import com.mihapetr.socialnetwork.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -11,6 +17,7 @@ import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -32,7 +39,8 @@ public class ProfileResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
-    private final ProfileRepository profileRepository;
+    public final ProfileRepository profileRepository;
+
 
     public ProfileResource(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
@@ -155,6 +163,25 @@ public class ProfileResource {
         }
     }
 
+    @NotGenerated
+    @GetMapping("/current-user")
+    public ResponseEntity<Profile> getCurrentUserProfile() {
+        LOG.debug("REST request to get current user Profile");
+        Profile profile = profileRepository.findByUserIsCurrentUser().stream().findFirst().orElse(null);
+        for (Profile p : profile.getProfiles()) {p.getUser();}
+        for (Profile p : profile.getOthers()) {p.getUser();}
+        return ResponseEntity.ok()
+            .headers(HeaderUtil.createAlert(applicationName, "Fetched " + ENTITY_NAME, profile.getId().toString()))
+            .body(profile);
+    }
+
+    @NotGenerated
+    @GetMapping("/by-login/{login}")
+    public Profile getProfileByLogin(@PathVariable(value = "login") String login) {
+        LOG.debug("REST request to get current user Profile");
+        return profileRepository.findByUserLogin(login).orElse(null);
+    }
+
     /**
      * {@code GET  /profiles/:id} : get the "id" profile.
      *
@@ -183,3 +210,5 @@ public class ProfileResource {
             .build();
     }
 }
+
+// todo : /profiles/:id/request implement that

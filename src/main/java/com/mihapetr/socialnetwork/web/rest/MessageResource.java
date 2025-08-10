@@ -5,6 +5,7 @@ import com.mihapetr.socialnetwork.repository.MessageRepository;
 import com.mihapetr.socialnetwork.web.rest.errors.BadRequestAlertException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -52,6 +53,7 @@ public class MessageResource {
         if (message.getId() != null) {
             throw new BadRequestAlertException("A new message cannot already have an ID", ENTITY_NAME, "idexists");
         }
+        message.time(ZonedDateTime.now());
         message = messageRepository.save(message);
         return ResponseEntity.created(new URI("/api/messages/" + message.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, message.getId().toString()))
