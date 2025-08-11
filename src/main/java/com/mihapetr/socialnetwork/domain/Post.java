@@ -38,7 +38,7 @@ public class Post implements Serializable {
     private ZonedDateTime time;
 
 @OneToMany(fetch = FetchType.LAZY, mappedBy = "post", cascade = { CascadeType.REMOVE })
-    @JsonIgnoreProperties(value = { "parent", "user", "post", "profile" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "user", "post" }, allowSetters = true)
     private Set<Comment> comments = new HashSet<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -46,7 +46,7 @@ public class Post implements Serializable {
 
     @ManyToOne(optional = false)
     @NotNull
-    @JsonIgnoreProperties(value = { "posts", "comments", "user", "others", "chats", "profiles" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "posts", "comments", "others", "chats", "profiles" }, allowSetters = true)
     private Profile profile;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -204,7 +204,7 @@ public class Post implements Serializable {
             "}";
     }
 
-    void comment( String content ){
-
+    public void comment( Comment comment ){
+        addComment(comment);
     }
 }

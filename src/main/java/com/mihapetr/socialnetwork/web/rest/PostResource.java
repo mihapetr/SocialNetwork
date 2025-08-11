@@ -1,7 +1,12 @@
 package com.mihapetr.socialnetwork.web.rest;
 
+import com.mihapetr.socialnetwork.NotGenerated;
+import com.mihapetr.socialnetwork.domain.Comment;
+import com.mihapetr.socialnetwork.domain.Message;
 import com.mihapetr.socialnetwork.domain.Post;
 import com.mihapetr.socialnetwork.repository.PostRepository;
+import com.mihapetr.socialnetwork.repository.ProfileRepository;
+import com.mihapetr.socialnetwork.security.SecurityUtils;
 import com.mihapetr.socialnetwork.web.rest.errors.BadRequestAlertException;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotNull;
@@ -11,6 +16,9 @@ import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,14 +39,18 @@ public class PostResource {
     private static final Logger LOG = LoggerFactory.getLogger(PostResource.class);
 
     private static final String ENTITY_NAME = "post";
+    private final ProfileRepository profileRepository;
 
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
     private final PostRepository postRepository;
+    CommentResource commentResource;
 
-    public PostResource(PostRepository postRepository) {
+    public PostResource(PostRepository postRepository, ProfileRepository profileRepository, CommentResource commentResource) {
         this.postRepository = postRepository;
+        this.profileRepository = profileRepository;
+        this.commentResource = commentResource;
     }
 
     /**
@@ -54,11 +66,19 @@ public class PostResource {
         if (post.getId() != null) {
             throw new BadRequestAlertException("A new post cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        post.time(ZonedDateTime.now());
+        customCreatePost(post);
         post = postRepository.save(post);
+        post.getProfile().getUser();
         return ResponseEntity.created(new URI("/api/posts/" + post.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, false, ENTITY_NAME, post.getId().toString()))
             .body(post);
+    }
+
+    void customCreatePost(Post post) {
+        post.time(ZonedDateTime.now());
+        post.setProfile(profileRepository.findByUserLogin(
+            SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new BadRequestAlertException("Could not get current login", ENTITY_NAME, "currentLoginFail"))
+        ).orElseThrow(() -> new BadRequestAlertException("Profile not found", ENTITY_NAME, "profilenotfound")));
     }
 
     /**
@@ -139,11 +159,36 @@ public class PostResource {
                 return existingPost;
             })
             .map(postRepository::save);
-
+        result.orElseThrow().setComments(
+            result.orElseThrow().getComments().stream().map(c -> {
+                c.setParent(c.getParent()); return c;
+            }).collect(Collectors.toSet())
+        );
+        System.out.println("Post (result) comments after patching: " + result.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet()));
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, post.getId().toString())
         );
+    }
+
+    // rquires a message with content
+    @NotGenerated
+    @PatchMapping(value = "/{id}/comment", consumes = { "application/json", "application/merge-patch+json" })
+    public ResponseEntity<Post> commentOnPost(
+        @PathVariable(value = "id", required = false) final Long id,
+        @NotNull @RequestBody Message message
+    ) throws URISyntaxException {
+        String currentLogin = SecurityUtils.getCurrentUserLogin().orElseThrow();
+        message.time(ZonedDateTime.now()).senderName(currentLogin);
+        Comment comment = new Comment().parent(message).profile(
+            profileRepository.findByUserLogin(currentLogin).orElseThrow()
+        );
+        Post post = postRepository.findById(id).orElseThrow();
+        post.comment(comment);
+        comment = commentResource.createComment(comment).getBody();
+        System.out.println("Comment before patching post: " + comment);
+        System.out.println("Comment content before patching post: " + comment.getParent().getContent());
+        return partialUpdatePost(id, post);
     }
 
     /**
@@ -167,7 +212,23 @@ public class PostResource {
     public ResponseEntity<Post> getPost(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Post : {}", id);
         Optional<Post> post = postRepository.findById(id);
+        fetchEntities(post.orElseThrow());
+        System.out.println(
+            "Post comments before returning it: " + post.orElseThrow().getComments()
+        );
+        System.out.println(
+          "Post messages before returning it: " + post.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet())
+        );
         return ResponseUtil.wrapOrNotFound(post);
+    }
+
+    @NotGenerated
+    void fetchEntities(Post post) {
+        post.setComments(post.getComments().stream().map(comment -> {
+            comment.setParent(comment.getParent());
+            comment.setProfile(comment.getProfile());
+            return comment;
+        }).collect(Collectors.toSet()));
     }
 
     /**

@@ -170,6 +170,9 @@ public class ProfileResource {
         Profile profile = profileRepository.findByUserIsCurrentUser().stream().findFirst().orElse(null);
         for (Profile p : profile.getProfiles()) {p.getUser();}
         for (Profile p : profile.getOthers()) {p.getUser();}
+        profile.setPosts(profile.getPosts());
+        //System.out.println("Profile is " + profile);
+        //System.out.println("Profile posts are " + profile.getPosts());
         return ResponseEntity.ok()
             .headers(HeaderUtil.createAlert(applicationName, "Fetched " + ENTITY_NAME, profile.getId().toString()))
             .body(profile);
@@ -211,4 +214,3 @@ public class ProfileResource {
     }
 }
 
-// todo : /profiles/:id/request implement that

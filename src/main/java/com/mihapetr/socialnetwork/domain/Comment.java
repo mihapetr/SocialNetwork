@@ -36,7 +36,7 @@ public class Comment implements Serializable {
     private Post post;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JsonIgnoreProperties(value = { "posts", "comments", "user", "others", "chats", "profiles" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "posts", "comments", "others", "chats", "profiles" }, allowSetters = true)
     private Profile profile;
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -130,6 +130,7 @@ public class Comment implements Serializable {
     public String toString() {
         return "Comment{" +
             "id=" + getId() +
+            ", profile='" + getProfile() + "'" +
             "}";
     }
 }
