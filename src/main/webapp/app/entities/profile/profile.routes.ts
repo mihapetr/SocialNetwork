@@ -3,6 +3,7 @@ import { Routes } from '@angular/router';
 import { UserRouteAccessService } from 'app/core/auth/user-route-access.service';
 import { ASC } from 'app/config/navigation.constants';
 import ProfileResolve from './route/profile-routing-resolve.service';
+import CurrentProfileResolve from './route/current-profile-routing-resolve.service';
 
 const profileRoute: Routes = [
   {
@@ -18,6 +19,14 @@ const profileRoute: Routes = [
     loadComponent: () => import('./detail/profile-detail.component').then(m => m.ProfileDetailComponent),
     resolve: {
       profile: ProfileResolve,
+    },
+    canActivate: [UserRouteAccessService],
+  },
+  {
+    path: 'current-user',
+    loadComponent: () => import('./detail/profile-detail.component').then(m => m.ProfileDetailComponent),
+    resolve: {
+      profile: CurrentProfileResolve,
     },
     canActivate: [UserRouteAccessService],
   },

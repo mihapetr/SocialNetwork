@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <a class="navbar-brand logo" routerLink="/" (click)="collapseNavbar()">
       <span class="logo-img"></span>
-      <span class="navbar-title">Socialnetwork</span>
+      <span class="navbar-title">SocialNetwork</span>
       <span class="navbar-version">{{ version }}</span>
     </a>
     <a
@@ -27,9 +27,38 @@
             </span>
           </a>
         </li>
+
         <!-- jhipster-needle-add-element-to-menu - JHipster will add new menu items here -->
         @if (account() !== null) {
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/post" (click)="collapseNavbar()">
+              <span>
+                <fa-icon icon="images"></fa-icon>
+                <span>Browse Posts</span>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/profile" (click)="collapseNavbar()">
+              <span>
+                <fa-icon icon="address-card"></fa-icon>
+                <span>Browse Profiles</span>
+              </span>
+            </a>
+          </li>
+
+          <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+            <a class="nav-link" routerLink="/chat" (click)="collapseNavbar()">
+              <span>
+                <fa-icon icon="message"></fa-icon>
+                <span>Chat</span>
+              </span>
+            </a>
+          </li>
+
           <li
+            style="display: none"
             ngbDropdown
             class="nav-item dropdown pointer"
             display="dynamic"
@@ -197,6 +226,19 @@
           </a>
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
             @if (accountRef !== null) {
+              <li>
+                <a
+                  class="dropdown-item"
+                  routerLink="/profile/current-user"
+                  routerLinkActive="active"
+                  (click)="collapseNavbar()"
+                  data-cy="settings"
+                >
+                  <fa-icon icon="circle-user" [fixedWidth]="true"></fa-icon>
+                  <span>My Profile</span>
+                </a>
+              </li>
+
               <li>
                 <a
                   class="dropdown-item"

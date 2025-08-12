@@ -2,57 +2,94 @@
   <div class="col-8">
     @if (post(); as postRef) {
       <div>
-        <h2 data-cy="postDetailsHeading"><span>Post</span></h2>
-
-        <hr />
+        <h2 style="display: none" data-cy="postDetailsHeading"><span>Post</span></h2>
 
         <jhi-alert-error></jhi-alert-error>
 
         <jhi-alert></jhi-alert>
 
         <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ postRef.id }}</span>
+          <div style="display: none">
+            <dt><span>ID</span></dt>
+            <dd>
+              <span>{{ postRef.id }}</span>
+            </dd>
+          </div>
+
+          <dt><span></span></dt>
+          <dd class="row">
+            <span class="col text-start" style="text-align: right">
+              <img [src]="postRef.profile?.picture" />
+              <a [routerLink]="['/profile', post()!.profile?.id, 'view']">{{ postRef.profile?.user?.login }}</a>
+            </span>
+            <span class="col text-end">{{ postRef.time | formatMediumDatetime }}</span>
           </dd>
-          <dt><span>Image</span></dt>
+
+          <dt><span></span></dt>
           <dd>
             @if (postRef.image) {
               <div>
                 <a (click)="openFile(postRef.image ?? '', postRef.imageContentType)">
                   <img [src]="'data:' + postRef.imageContentType + ';base64,' + postRef.image" style="max-width: 100%" alt="post" />
                 </a>
-                {{ postRef.imageContentType }}, {{ byteSize(postRef.image ?? '') }}
+                <!--{{ postRef.imageContentType }}, {{ byteSize(postRef.image ?? '') }}-->
               </div>
             }
           </dd>
-          <dt><span>Description</span></dt>
+
+          <dt><span></span></dt>
           <dd>
             <span>{{ postRef.description }}</span>
           </dd>
-          <dt><span>Time</span></dt>
-          <dd>
-            <span>{{ postRef.time | formatMediumDatetime }}</span>
-          </dd>
-          <dt><span>User</span></dt>
-          <dd>
-            <span>{{ postRef.user?.id }}</span>
-          </dd>
-          <dt><span>Profile</span></dt>
-          <dd>
-            @if (post()!.profile) {
-              <div>
-                <a [routerLink]="['/profile', post()!.profile?.id, 'view']">{{ postRef.profile?.id }}</a>
-              </div>
+
+          <dt></dt>
+          <div class="row g-2">
+            <div class="col">
+              <input type="text" [(ngModel)]="commentText" class="form-control w-100" placeholder="Write a comment..." />
+            </div>
+            <div class="col-auto">
+              <button type="submit" (click)="postComment()" class="btn btn-primary" data-cy="entityDetailsBackButton">Post Comment</button>
+            </div>
+          </div>
+
+          <dt></dt>
+          <tbody>
+            @for (c of postRef.comments; track c) {
+              <tr class="border-top border-bottom">
+                <td colspan="3" class="text-start py-2">
+                  <span class="text-muted me-2">{{ formatDateTime(c.parent?.time + '') }}</span>
+                  <a [routerLink]="['/profile', c.profile?.id, 'view']">{{ c.profile?.user?.login }}</a>
+                </td>
+              </tr>
+              <tr class="border-bottom">
+                <td colspan="3" class="text-start py-2 ps-4">
+                  {{ c.parent?.content }}
+                </td>
+              </tr>
             }
-          </dd>
+          </tbody>
+
+          <div style="display: none">
+            <dt><span>User</span></dt>
+            <dd>
+              <span>{{ postRef.user?.id }}</span>
+            </dd>
+            <dt><span>Profile</span></dt>
+            <dd>
+              @if (post()!.profile) {
+                <div>
+                  <a [routerLink]="['/profile', post()!.profile?.id, 'view']">{{ postRef.profile?.id }}</a>
+                </div>
+              }
+            </dd>
+          </div>
         </dl>
 
         <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/post', postRef.id, 'edit']" class="btn btn-primary">
+        <button style="display: none" type="button" [routerLink]="['/post', postRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
         </button>
       </div>

@@ -6,7 +6,7 @@ export interface IProfile {
   status?: string | null;
   picture?: string | null;
   pictureContentType?: string | null;
-  user?: Pick<IUser, 'id'> | null;
+  user?: Pick<IUser, 'id' | 'login'> | null;
   others?: IProfile[] | null;
   chats?: IChat[] | null;
   profiles?: IProfile[] | null;

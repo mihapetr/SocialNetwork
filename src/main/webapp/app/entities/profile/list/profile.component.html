@@ -9,6 +9,7 @@
       </button>
 
       <button
+        style="display: none"
         id="jh-create-entity"
         data-cy="entityCreateButton"
         class="btn btn-primary jh-create-entity create-profile"
@@ -134,12 +135,23 @@
                     <span class="d-none d-md-inline">View</span>
                   </a>
 
-                  <a [routerLink]="['/profile', profile.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                  <a
+                    style="display: none"
+                    [routerLink]="['/profile', profile.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(profile)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button
+                    style="display: none"
+                    type="submit"
+                    (click)="delete(profile)"
+                    class="btn btn-danger btn-sm"
+                    data-cy="entityDeleteButton"
+                  >
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>

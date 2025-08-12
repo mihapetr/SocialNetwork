@@ -33,7 +33,7 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
+            <th style="display: none" scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span>ID</span>
 
@@ -61,13 +61,13 @@
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
+            <th style="display: none" scope="col" jhiSortBy="user.id">
               <div class="d-flex">
                 <span>User</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="profile.id">
+            <th style="display: none" scope="col" jhiSortBy="profile.id">
               <div class="d-flex">
                 <span>Profile</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
@@ -79,23 +79,24 @@
         <tbody>
           @for (post of posts(); track trackId(post)) {
             <tr data-cy="entityTable">
-              <td>
+              <td style="display: none">
                 <a [routerLink]="['/post', post.id, 'view']">{{ post.id }}</a>
               </td>
               <td>
                 @if (post.image) {
-                  <a (click)="openFile(post.image, post.imageContentType)">
-                    <img [src]="'data:' + post.imageContentType + ';base64,' + post.image" style="max-height: 30px" alt="post" />
+                  <!--<a (click)="openFile(post.image, post.imageContentType)">-->
+                  <a [routerLink]="['/post', post.id, 'view']">
+                    <img [src]="'data:' + post.imageContentType + ';base64,' + post.image" style="height: 30vh" alt="post" />
                   </a>
-                  <span>{{ post.imageContentType }}, {{ byteSize(post.image) }}</span>
+                  <span style="display: none">{{ post.imageContentType }}, {{ byteSize(post.image) }}</span>
                 }
               </td>
               <td>{{ post.description }}</td>
               <td>{{ post.time | formatMediumDatetime }}</td>
-              <td>
+              <td style="display: none">
                 {{ post.user?.id }}
               </td>
-              <td>
+              <td style="display: none">
                 @if (post.profile) {
                   <div>
                     <a [routerLink]="['/profile', post.profile.id, 'view']">{{ post.profile.id }}</a>
@@ -104,17 +105,33 @@
               </td>
               <td class="text-end">
                 <div class="btn-group">
-                  <a [routerLink]="['/post', post.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
+                  <a
+                    style="display: none"
+                    [routerLink]="['/post', post.id, 'view']"
+                    class="btn btn-info btn-sm"
+                    data-cy="entityDetailsButton"
+                  >
                     <fa-icon icon="eye"></fa-icon>
                     <span class="d-none d-md-inline">View</span>
                   </a>
 
-                  <a [routerLink]="['/post', post.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                  <a
+                    style="display: none"
+                    [routerLink]="['/post', post.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>
 
-                  <button type="submit" (click)="delete(post)" class="btn btn-danger btn-sm" data-cy="entityDeleteButton">
+                  <button
+                    style="display: none"
+                    type="submit"
+                    (click)="delete(post)"
+                    class="btn btn-danger btn-sm"
+                    data-cy="entityDeleteButton"
+                  >
                     <fa-icon icon="times"></fa-icon>
                     <span class="d-none d-md-inline">Delete</span>
                   </button>

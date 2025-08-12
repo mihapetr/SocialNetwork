@@ -35,6 +35,10 @@ export class ProfileService {
     return this.http.get<IProfile>(`${this.resourceUrl}/${id}`, { observe: 'response' });
   }
 
+  findCurrent(): Observable<EntityResponseType> {
+    return this.http.get<IProfile>(`${this.resourceUrl}/current-user`, { observe: 'response' });
+  }
+
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<IProfile[]>(this.resourceUrl, { params: options, observe: 'response' });

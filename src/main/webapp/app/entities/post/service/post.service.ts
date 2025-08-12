@@ -8,6 +8,7 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IPost, NewPost } from '../post.model';
+import { IMessage, NewMessage } from '../../message/message.model';
 
 export type PartialUpdatePost = Partial<IPost> & Pick<IPost, 'id'>;
 
@@ -40,6 +41,16 @@ export class PostService {
     const copy = this.convertDateFromClient(post);
     return this.http
       .put<RestPost>(`${this.resourceUrl}/${this.getPostIdentifier(post)}`, copy, { observe: 'response' })
+      .pipe(map(res => this.convertResponseFromServer(res)));
+  }
+
+  comment(postId: number, content: string): Observable<EntityResponseType> {
+    const message: NewMessage = {
+      id: null,
+      content,
+    };
+    return this.http
+      .patch<RestPost>(`${this.resourceUrl}/${postId}/comment`, message, { observe: 'response' })
       .pipe(map(res => this.convertResponseFromServer(res)));
   }
 

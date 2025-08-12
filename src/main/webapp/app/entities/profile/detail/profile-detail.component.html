@@ -2,7 +2,22 @@
   <div class="col-8">
     @if (profile(); as profileRef) {
       <div>
-        <h2 data-cy="profileDetailsHeading"><span>Profile</span></h2>
+        <h2 data-cy="profileDetailsHeading" style="display: flex; align-items: center; gap: 0.5rem">
+          @if (profileRef.picture) {
+            <a (click)="openFile(profileRef.picture ?? '', profileRef.pictureContentType)" style="display: inline-block">
+              <img
+                [src]="'data:' + profileRef.pictureContentType + ';base64,' + profileRef.picture"
+                alt="profile"
+                style="width: auto; max-height: 60px; object-fit: cover"
+              />
+            </a>
+          }
+          <span>{{ profileRef.user?.login }}</span>
+
+          <button type="button" (click)="requestChat()" class="btn btn-primary ms-auto">
+            <span>Request</span>
+          </button>
+        </h2>
 
         <hr />
 
@@ -11,34 +26,16 @@
         <jhi-alert></jhi-alert>
 
         <dl class="row-md jh-entity-details">
-          <dt><span>ID</span></dt>
-          <dd>
-            <span>{{ profileRef.id }}</span>
-          </dd>
           <dt><span>Status</span></dt>
           <dd>
             <span>{{ profileRef.status }}</span>
           </dd>
-          <dt><span>Picture</span></dt>
-          <dd>
-            @if (profileRef.picture) {
-              <div>
-                <a (click)="openFile(profileRef.picture ?? '', profileRef.pictureContentType)">
-                  <img
-                    [src]="'data:' + profileRef.pictureContentType + ';base64,' + profileRef.picture"
-                    style="max-width: 100%"
-                    alt="profile"
-                  />
-                </a>
-                {{ profileRef.pictureContentType }}, {{ byteSize(profileRef.picture ?? '') }}
-              </div>
-            }
-          </dd>
-          <dt><span>User</span></dt>
-          <dd>
+
+          <dt style="display: none"><span>User</span></dt>
+          <dd style="display: none">
             <span>{{ profileRef.user?.id }}</span>
           </dd>
-          <dt><span>Other</span></dt>
+          <dt><span>Friends</span></dt>
           <dd>
             @for (other of profileRef.others; track $index; let last = $last) {
               <span>
@@ -47,8 +44,8 @@
               </span>
             }
           </dd>
-          <dt><span>Chat</span></dt>
-          <dd>
+          <dt style="display: none"><span>Chat</span></dt>
+          <dd style="display: none">
             @for (chat of profileRef.chats; track $index; let last = $last) {
               <span>
                 <a [routerLink]="['/chat', chat.id, 'view']">{{ chat?.id }}</a
@@ -56,8 +53,8 @@
               </span>
             }
           </dd>
-          <dt><span>Profile</span></dt>
-          <dd>
+          <dt style="display: none"><span>Profile</span></dt>
+          <dd style="display: none">
             @for (profile of profileRef.profiles; track $index; let last = $last) {
               <span>
                 <a [routerLink]="['/profile', profile.id, 'view']">{{ profile?.id }}</a
@@ -71,7 +68,7 @@
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
         </button>
 
-        <button type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
+        <button style="display: none" type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
           <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
         </button>
       </div>

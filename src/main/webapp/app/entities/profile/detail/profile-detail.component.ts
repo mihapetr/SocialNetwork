@@ -26,4 +26,8 @@ export class ProfileDetailComponent {
   previousState(): void {
     window.history.back();
   }
+
+  protected requestChat(): void {
+    //
+  }
 }
