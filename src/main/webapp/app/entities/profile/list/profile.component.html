@@ -34,61 +34,65 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
+            <th scope="col" jhiSortBy="id" style="display: none">
               <div class="d-flex">
                 <span>ID</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="status">
+            <th scope="col" jhiSortBy="status" style="display: none">
               <div class="d-flex">
                 <span>Status</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
+
             <th scope="col" jhiSortBy="picture">
               <div class="d-flex">
-                <span>Picture</span>
+                <span>Picture and Username</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
-              <div class="d-flex">
-                <span>User</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="other.id">
-              <div class="d-flex">
-                <span>Other</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="chat.id">
-              <div class="d-flex">
-                <span>Chat</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
-            <th scope="col" jhiSortBy="profile.id">
-              <div class="d-flex">
-                <span>Profile</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
+
+            <div style="display: none">
+              <th scope="col" jhiSortBy="user.id">
+                <div class="d-flex">
+                  <span>User</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
+              <th scope="col" jhiSortBy="other.id">
+                <div class="d-flex">
+                  <span>Other</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
+              <th scope="col" jhiSortBy="chat.id">
+                <div class="d-flex">
+                  <span>Chat</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
+              <th scope="col" jhiSortBy="profile.id">
+                <div class="d-flex">
+                  <span>Profile</span>
+                  <fa-icon class="p-1" icon="sort"></fa-icon>
+                </div>
+              </th>
+            </div>
             <th scope="col"></th>
           </tr>
         </thead>
         <tbody>
           @for (profile of profiles(); track trackId(profile)) {
             <tr data-cy="entityTable">
-              <td>
+              <td style="display: none">
                 <a [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a>
               </td>
-              <td>{{ profile.status }}</td>
+              <td style="display: none">{{ profile.status }}</td>
               <td>
                 @if (profile.picture) {
                   <a (click)="openFile(profile.picture, profile.pictureContentType)">
@@ -98,13 +102,14 @@
                       alt="profile"
                     />
                   </a>
-                  <span>{{ profile.pictureContentType }}, {{ byteSize(profile.picture) }}</span>
+                  <span>{{ profile.user?.login }}</span>
+                  <span style="display: none">{{ profile.pictureContentType }}, {{ byteSize(profile.picture) }}</span>
                 }
               </td>
-              <td>
+              <td style="display: none">
                 {{ profile.user?.id }}
               </td>
-              <td>
+              <td style="display: none">
                 @for (other of profile.others; track $index; let last = $last) {
                   <span>
                     <a class="form-control-static" [routerLink]="['/profile', other.id, 'view']">{{ other.id }}</a
@@ -112,7 +117,7 @@
                   </span>
                 }
               </td>
-              <td>
+              <td style="display: none">
                 @for (chat of profile.chats; track $index; let last = $last) {
                   <span>
                     <a class="form-control-static" [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a
@@ -120,7 +125,7 @@
                   </span>
                 }
               </td>
-              <td>
+              <td style="display: none">
                 @for (profile of profile.profiles; track $index; let last = $last) {
                   <span>
                     <a class="form-control-static" [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a

@@ -36,7 +36,7 @@ public class Chat implements Serializable {
     private User user;
 
     @ManyToMany(fetch = FetchType.LAZY, mappedBy = "chats")
-    @JsonIgnoreProperties(value = { "posts", "comments", "user", "others", "chats", "profiles" }, allowSetters = true)
+    @JsonIgnoreProperties(value = { "posts", "comments", "others", "chats", "profiles" }, allowSetters = true)
     private Set<Profile> profiles = new HashSet<>();
 
     // jhipster-needle-entity-add-field - JHipster will add fields here
@@ -184,7 +184,5 @@ public class Chat implements Serializable {
             "}";
     }
 
-    void message( String content ){
-
-    }
+    void message(String content) {}
 }

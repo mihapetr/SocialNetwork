@@ -14,9 +14,11 @@
           }
           <span>{{ profileRef.user?.login }}</span>
 
-          <button type="button" (click)="requestChat()" class="btn btn-primary ms-auto">
-            <span>Request</span>
-          </button>
+          @if (!friends()) {
+            <button type="button" (click)="requestChat(profileRef.id)" class="btn btn-primary ms-auto">
+              <span>Request</span>
+            </button>
+          }
         </h2>
 
         <hr />
@@ -37,9 +39,9 @@
           </dd>
           <dt><span>Friends</span></dt>
           <dd>
-            @for (other of profileRef.others; track $index; let last = $last) {
+            @for (other of friendsList(); track $index; let last = $last) {
               <span>
-                <a [routerLink]="['/profile', other.id, 'view']">{{ other?.id }}</a
+                <a [routerLink]="['/profile', other.id, 'view']">{{ other?.user?.login }}</a
                 >{{ last ? '' : ', ' }}
               </span>
             }
@@ -64,13 +66,42 @@
           </dd>
         </dl>
 
+        <dt><span>Posts</span></dt>
+        <dd></dd>
+        <div class="table-responsive table-entities" id="entities">
+          <table class="table table-striped" aria-describedby="page-heading">
+            <tbody>
+              @for (post of profileRef.posts; track post) {
+                <tr data-cy="entityTable">
+                  <td style="display: none">
+                    <a [routerLink]="['/post', post.id, 'view']">{{ post.id }}</a>
+                  </td>
+                  <td>
+                    @if (post.image) {
+                      <!--<a (click)="openFile(post.image, post.imageContentType)">-->
+                      <a [routerLink]="['/post', post.id, 'view']">
+                        <img [src]="'data:' + post.imageContentType + ';base64,' + post.image" style="height: 20vh" alt="post" />
+                      </a>
+                      <span style="display: none">{{ post.imageContentType }}, {{ byteSize(post.image) }}</span>
+                    }
+                  </td>
+                  <td>{{ post.description }}</td>
+                  <td>{{ formatTime(post.time + '') }}</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
         <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
           <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span>Back</span>
         </button>
 
-        <button style="display: none" type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
-          <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
-        </button>
+        @if (owner()) {
+          <button type="button" [routerLink]="['/profile', profileRef.id, 'edit']" class="btn btn-primary">
+            <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span>Edit</span>
+          </button>
+        }
       </div>
     }
   </div>

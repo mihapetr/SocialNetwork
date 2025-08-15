@@ -1,6 +1,9 @@
 package com.mihapetr.socialnetwork.web.rest;
 
+import com.mihapetr.socialnetwork.NotGenerated;
+import com.mihapetr.socialnetwork.domain.Profile;
 import com.mihapetr.socialnetwork.domain.User;
+import com.mihapetr.socialnetwork.repository.ProfileRepository;
 import com.mihapetr.socialnetwork.repository.UserRepository;
 import com.mihapetr.socialnetwork.security.SecurityUtils;
 import com.mihapetr.socialnetwork.service.MailService;
@@ -11,6 +14,10 @@ import com.mihapetr.socialnetwork.web.rest.errors.*;
 import com.mihapetr.socialnetwork.web.rest.vm.KeyAndPasswordVM;
 import com.mihapetr.socialnetwork.web.rest.vm.ManagedUserVM;
 import jakarta.validation.Valid;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -24,6 +31,8 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api")
 public class AccountResource {
+
+    private final ProfileRepository profileRepository;
 
     private static class AccountResourceException extends RuntimeException {
 
@@ -40,10 +49,16 @@ public class AccountResource {
 
     private final MailService mailService;
 
-    public AccountResource(UserRepository userRepository, UserService userService, MailService mailService) {
+    public AccountResource(
+        UserRepository userRepository,
+        UserService userService,
+        MailService mailService,
+        ProfileRepository profileRepository
+    ) {
         this.userRepository = userRepository;
         this.userService = userService;
         this.mailService = mailService;
+        this.profileRepository = profileRepository;
     }
 
     /**
@@ -61,7 +76,22 @@ public class AccountResource {
             throw new InvalidPasswordException();
         }
         User user = userService.registerUser(managedUserVM, managedUserVM.getPassword());
+        customRegisterAccount(user);
         //mailService.sendActivationEmail(user);
+    }
+
+    @NotGenerated
+    void customRegisterAccount(User user) {
+        String location = "src/main/webapp/content/images/jhipster_family_member_1_head-192.png";
+        Profile profile;
+        try {
+            Path path = Paths.get(location);
+            profile = new Profile().picture(Files.readAllBytes(path)).status("Hi, I am new here!").user(user);
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
+            throw new RuntimeException(e);
+        }
+        profileRepository.save(profile);
     }
 
     /**

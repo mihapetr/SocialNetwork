@@ -9,6 +9,7 @@
       </button>
 
       <button
+        style="display: none"
         id="jh-create-entity"
         data-cy="entityCreateButton"
         class="btn btn-primary jh-create-entity create-chat"
@@ -33,39 +34,42 @@
       <table class="table table-striped" aria-describedby="page-heading">
         <thead>
           <tr jhiSort [(sortState)]="sortState" (sortChange)="navigateToWithComponentValues($event)">
-            <th scope="col" jhiSortBy="id">
+            <th style="display: none" scope="col" jhiSortBy="id">
               <div class="d-flex">
                 <span>ID</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="initiatorName">
+
+            <th scope="col" jhiSortBy="profile.id">
               <div class="d-flex">
-                <span>Initiator Name</span>
+                <span>With</span>
+                <fa-icon class="p-1" icon="sort"></fa-icon>
+              </div>
+            </th>
+
+            <th style="display: none" scope="col" jhiSortBy="initiatorName">
+              <div class="d-flex">
+                <span>Friend Request</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="accepted">
+            <th style="display: none" scope="col" jhiSortBy="accepted">
               <div class="d-flex">
                 <span>Accepted</span>
 
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="user.id">
+            <th style="display: none" scope="col" jhiSortBy="user.id">
               <div class="d-flex">
                 <span>User</span>
                 <fa-icon class="p-1" icon="sort"></fa-icon>
               </div>
             </th>
-            <th scope="col" jhiSortBy="profile.id">
-              <div class="d-flex">
-                <span>Profile</span>
-                <fa-icon class="p-1" icon="sort"></fa-icon>
-              </div>
-            </th>
+
             <th scope="col"></th>
           </tr>
         </thead>
@@ -73,29 +77,61 @@
           @for (chat of chats(); track trackId(chat)) {
             <tr data-cy="entityTable">
               <td>
-                <a [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a>
-              </td>
-              <td>{{ chat.initiatorName }}</td>
-              <td>{{ chat.accepted }}</td>
-              <td>
-                {{ chat.user?.id }}
-              </td>
-              <td>
                 @for (profile of chat.profiles; track $index; let last = $last) {
-                  <span>
-                    <a class="form-control-static" [routerLink]="['/profile', profile.id, 'view']">{{ profile.id }}</a
-                    >{{ last ? '' : ', ' }}
-                  </span>
+                  @if (profile.user?.login != account()?.login) {
+                    <span>
+                      <a class="form-control-static" [routerLink]="['/profile', profile.id, 'view']">{{ profile.user?.login }}</a
+                      >{{ last ? '' : ', ' }}
+                    </span>
+                  }
                 }
               </td>
+              <td style="display: none">
+                <a [routerLink]="['/chat', chat.id, 'view']">{{ chat.id }}</a>
+              </td>
+              <td style="display: none">
+                @if (!chat.accepted) {
+                  @if (account()?.login == chat.initiatorName) {
+                    <span>pending</span>
+                  } @else {
+                    <button type="submit" (click)="accept(chat.id)" class="btn btn-success btn-sm" data-cy="entityDeleteButton">
+                      <fa-icon icon="check"></fa-icon>
+                      <span class="d-none d-md-inline">Accept</span>
+                    </button>
+                  }
+                } @else {
+                  <span>accepted</span>
+                }
+              </td>
+              <td style="display: none">{{ chat.accepted }}</td>
+              <td style="display: none">
+                {{ chat.user?.id }}
+              </td>
+
               <td class="text-end">
                 <div class="btn-group">
+                  @if (!chat.accepted) {
+                    @if (account()?.login == chat.initiatorName) {
+                      <div class="btn btn-warning btn-sm" disabled="true">Pending</div>
+                    } @else {
+                      <button type="submit" (click)="accept(chat.id)" class="btn btn-success btn-sm" data-cy="entityDeleteButton">
+                        <fa-icon icon="check"></fa-icon>
+                        <span class="d-none d-md-inline">Accept</span>
+                      </button>
+                    }
+                  }
+
                   <a [routerLink]="['/chat', chat.id, 'view']" class="btn btn-info btn-sm" data-cy="entityDetailsButton">
                     <fa-icon icon="eye"></fa-icon>
-                    <span class="d-none d-md-inline">View</span>
+                    <span class="d-none d-md-inline">Open</span>
                   </a>
 
-                  <a [routerLink]="['/chat', chat.id, 'edit']" class="btn btn-primary btn-sm" data-cy="entityEditButton">
+                  <a
+                    style="display: none"
+                    [routerLink]="['/chat', chat.id, 'edit']"
+                    class="btn btn-primary btn-sm"
+                    data-cy="entityEditButton"
+                  >
                     <fa-icon icon="pencil-alt"></fa-icon>
                     <span class="d-none d-md-inline">Edit</span>
                   </a>

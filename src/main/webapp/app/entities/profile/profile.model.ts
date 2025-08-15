@@ -1,5 +1,6 @@
 import { IUser } from 'app/entities/user/user.model';
 import { IChat } from 'app/entities/chat/chat.model';
+import { IPost } from '../post/post.model';
 
 export interface IProfile {
   id: number;
@@ -10,6 +11,7 @@ export interface IProfile {
   others?: IProfile[] | null;
   chats?: IChat[] | null;
   profiles?: IProfile[] | null;
+  posts?: IPost[] | null;
 }
 
 export type NewProfile = Omit<IProfile, 'id'> & { id: null };

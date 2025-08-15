@@ -41,7 +41,6 @@ public class ProfileResource {
 
     public final ProfileRepository profileRepository;
 
-
     public ProfileResource(ProfileRepository profileRepository) {
         this.profileRepository = profileRepository;
     }
@@ -168,8 +167,12 @@ public class ProfileResource {
     public ResponseEntity<Profile> getCurrentUserProfile() {
         LOG.debug("REST request to get current user Profile");
         Profile profile = profileRepository.findByUserIsCurrentUser().stream().findFirst().orElse(null);
-        for (Profile p : profile.getProfiles()) {p.getUser();}
-        for (Profile p : profile.getOthers()) {p.getUser();}
+        for (Profile p : profile.getProfiles()) {
+            p.getUser();
+        }
+        for (Profile p : profile.getOthers()) {
+            p.getUser();
+        }
         profile.setPosts(profile.getPosts());
         //System.out.println("Profile is " + profile);
         //System.out.println("Profile posts are " + profile.getPosts());
@@ -195,6 +198,8 @@ public class ProfileResource {
     public ResponseEntity<Profile> getProfile(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Profile : {}", id);
         Optional<Profile> profile = profileRepository.findOneWithEagerRelationships(id);
+        Profile pe = profile.orElseThrow();
+        pe.setPosts(pe.getPosts());
         return ResponseUtil.wrapOrNotFound(profile);
     }
 
@@ -213,4 +218,3 @@ public class ProfileResource {
             .build();
     }
 }
-

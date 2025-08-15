@@ -10,6 +10,10 @@ import { DEFAULT_SORT_DATA, ITEM_DELETED_EVENT, SORT } from 'app/config/navigati
 import { IChat } from '../chat.model';
 import { ChatService, EntityArrayResponseType } from '../service/chat.service';
 import { ChatDeleteDialogComponent } from '../delete/chat-delete-dialog.component';
+import { AccountService } from '../../../core/auth/account.service';
+import { HttpResponse } from '@angular/common/http';
+import { IPost } from '../../post/post.model';
+import { IProfile } from '../../profile/profile.model';
 
 @Component({
   selector: 'jhi-chat',
@@ -20,6 +24,7 @@ export class ChatComponent implements OnInit {
   subscription: Subscription | null = null;
   chats = signal<IChat[]>([]);
   isLoading = false;
+  account = inject(AccountService).trackCurrentAccount();
 
   sortState = sortStateSignal({});
 
@@ -69,6 +74,25 @@ export class ChatComponent implements OnInit {
 
   navigateToWithComponentValues(event: SortState): void {
     this.handleNavigation(event);
+  }
+
+  accept(id: number): void {
+    this.subscribeToAcceptResponse(this.chatService.accept(id));
+  }
+
+  protected subscribeToAcceptResponse(result: Observable<HttpResponse<IPost>>): void {
+    result.subscribe({
+      next: res => this.onSaveSuccess(res.body!),
+      error: () => this.onSaveError(),
+    });
+  }
+
+  protected onSaveSuccess(updatedProfile: IProfile): void {
+    //
+  }
+
+  protected onSaveError(): void {
+    // Api for inheritance.
   }
 
   protected fillComponentAttributeFromRoute(params: ParamMap, data: Data): void {

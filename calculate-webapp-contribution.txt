@@ -1,0 +1,30 @@
+git diff --shortstat 99e1454                HEAD -- src/main/webapp
+git diff --shortstat <initial-commit-hash>  HEAD -- <path-to-sub-dir>
+----------------------------------------------------------------------
+<files-changed>, <insertions>, <deletions>
+
+
+git ls-files src/main/webapp | xargs wc -l
+git ls-files <path-to-sub-dir> | xargs wc -l
+---------------------------------------------
+<total-lines> total
+
+( <insertions> + <deletions> ) / <total-lines>
+
+
+example mid dev:
+( 317 + 96 ) / 23057 = 0.0179121308 ~ 1,79%
+contribution > 98% (lines estimation, not precise)
+
+
+# TODO DOKUMENTACIJA
+
+* kako se koristi MHipster i SocialNetwork
+* calculate contribution
+  * DB 100%
+  * backend using MHipster overview
+  * frontend using git shortstat
+* document the method which calculates the Java contribution
+* pogledaj na mobitel strukturu latex dokumenta
+* rework the introduction
+* pogledaj zadnja dva papira s popisom stvari koje treba napisati

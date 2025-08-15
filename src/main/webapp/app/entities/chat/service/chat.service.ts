@@ -6,6 +6,8 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IChat, NewChat } from '../chat.model';
+import { IProfile } from '../../profile/profile.model';
+import { NewMessage } from '../../message/message.model';
 
 export type PartialUpdateChat = Partial<IChat> & Pick<IChat, 'id'>;
 
@@ -31,8 +33,20 @@ export class ChatService {
     return this.http.patch<IChat>(`${this.resourceUrl}/${this.getChatIdentifier(chat)}`, chat, { observe: 'response' });
   }
 
+  message(id: number, content: string): Observable<EntityResponseType> {
+    const message: NewMessage = {
+      id: null,
+      content,
+    };
+    return this.http.patch<IChat>(`${this.resourceUrl}/${id}/message`, message, { observe: 'response' });
+  }
+
   find(id: number): Observable<EntityResponseType> {
     return this.http.get<IChat>(`${this.resourceUrl}/${id}`, { observe: 'response' });
+  }
+
+  accept(id: number): Observable<HttpResponse<IProfile>> {
+    return this.http.patch<IProfile>(`${this.resourceUrl}/${id}/accept`, null, { observe: 'response' });
   }
 
   query(req?: any): Observable<EntityArrayResponseType> {

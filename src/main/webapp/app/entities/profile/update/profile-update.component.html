@@ -1,17 +1,10 @@
 <div class="d-flex justify-content-center">
   <div class="col-8">
     <form name="editForm" novalidate (ngSubmit)="save()" [formGroup]="editForm">
-      <h2 id="jhi-profile-heading" data-cy="ProfileCreateUpdateHeading">Create or edit a Profile</h2>
+      <h2 id="jhi-profile-heading" data-cy="ProfileCreateUpdateHeading">Edit Your Profile</h2>
 
       <div>
         <jhi-alert-error></jhi-alert-error>
-
-        @if (editForm.controls.id.value !== null) {
-          <div class="mb-3">
-            <label class="form-label" for="field_id">ID</label>
-            <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
-          </div>
-        }
 
         <div class="mb-3">
           <label class="form-label" for="field_status">Status</label>
@@ -51,67 +44,6 @@
             id="field_pictureContentType"
             formControlName="pictureContentType"
           />
-        </div>
-
-        <div class="mb-3">
-          <label class="form-label" for="field_user">User</label>
-          <select class="form-control" id="field_user" data-cy="user" name="user" formControlName="user" [compareWith]="compareUser">
-            <option [ngValue]="null"></option>
-            @for (userOption of usersSharedCollection; track $index) {
-              <option [ngValue]="userOption">{{ userOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_others">Other</label>
-          <select
-            class="form-control"
-            id="field_others"
-            data-cy="other"
-            multiple
-            name="others"
-            formControlName="others"
-            [compareWith]="compareProfile"
-          >
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_chats">Chat</label>
-          <select
-            class="form-control"
-            id="field_chats"
-            data-cy="chat"
-            multiple
-            name="chats"
-            formControlName="chats"
-            [compareWith]="compareChat"
-          >
-            @for (chatOption of chatsSharedCollection; track $index) {
-              <option [ngValue]="chatOption">{{ chatOption.id }}</option>
-            }
-          </select>
-        </div>
-
-        <div class="mb-3">
-          <label for="field_profiles">Profile</label>
-          <select
-            class="form-control"
-            id="field_profiles"
-            data-cy="profile"
-            multiple
-            name="profiles"
-            formControlName="profiles"
-            [compareWith]="compareProfile"
-          >
-            @for (profileOption of profilesSharedCollection; track $index) {
-              <option [ngValue]="profileOption">{{ profileOption.id }}</option>
-            }
-          </select>
         </div>
       </div>
 

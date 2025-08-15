@@ -7,6 +7,7 @@ import { catchError, shareReplay, tap } from 'rxjs/operators';
 import { StateStorageService } from 'app/core/auth/state-storage.service';
 import { Account } from 'app/core/auth/account.model';
 import { ApplicationConfigService } from '../config/application-config.service';
+import { IProfile } from '../../entities/profile/profile.model';
 
 @Injectable({ providedIn: 'root' })
 export class AccountService {
@@ -21,6 +22,11 @@ export class AccountService {
 
   save(account: Account): Observable<{}> {
     return this.http.post(this.applicationConfigService.getEndpointFor('api/account'), account);
+  }
+
+  profileByLogin(login: string | undefined): Observable<IProfile> {
+    const url = this.applicationConfigService.getEndpointFor('api/profiles');
+    return this.http.get<IProfile>(`${url}/by-login/${login}`);
   }
 
   authenticate(identity: Account | null): void {

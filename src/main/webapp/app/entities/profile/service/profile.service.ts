@@ -6,10 +6,12 @@ import { isPresent } from 'app/core/util/operators';
 import { ApplicationConfigService } from 'app/core/config/application-config.service';
 import { createRequestOption } from 'app/core/request/request-util';
 import { IProfile, NewProfile } from '../profile.model';
+import { IChat } from '../../chat/chat.model';
 
 export type PartialUpdateProfile = Partial<IProfile> & Pick<IProfile, 'id'>;
 
 export type EntityResponseType = HttpResponse<IProfile>;
+export type ChatResponseType = HttpResponse<IChat>;
 export type EntityArrayResponseType = HttpResponse<IProfile[]>;
 
 @Injectable({ providedIn: 'root' })
@@ -42,6 +44,11 @@ export class ProfileService {
   query(req?: any): Observable<EntityArrayResponseType> {
     const options = createRequestOption(req);
     return this.http.get<IProfile[]>(this.resourceUrl, { params: options, observe: 'response' });
+  }
+
+  requestChat(id: number): Observable<ChatResponseType> {
+    const url = this.applicationConfigService.getEndpointFor('api/chats');
+    return this.http.post<IChat>(`${url}/request-chat-with-profile/${id}`, null, { observe: 'response' });
   }
 
   delete(id: number): Observable<HttpResponse<{}>> {

@@ -35,10 +35,6 @@ export class PostDetailComponent {
     window.history.back();
   }
 
-  postComment(): void {
-    this.subscribeToCommentResponse(this.postService.comment(this.post()!.id, this.commentText));
-  }
-
   formatDateTime(isoString: string): string {
     const date = new Date(isoString);
 
@@ -59,6 +55,10 @@ export class PostDetailComponent {
     const seconds = pad(date.getSeconds());
 
     return `${day} ${month} ${year} ${hours}:${minutes}`;
+  }
+
+  postComment(): void {
+    this.subscribeToCommentResponse(this.postService.comment(this.post()!.id, this.commentText));
   }
 
   protected subscribeToCommentResponse(result: Observable<HttpResponse<IPost>>): void {

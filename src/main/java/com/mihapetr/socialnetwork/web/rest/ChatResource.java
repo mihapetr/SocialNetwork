@@ -43,8 +43,12 @@ public class ChatResource {
     private final ProfileRepository profileRepository;
 
     @NotGenerated
-    public ChatResource(ChatRepository chatRepository, ProfileResource profileResource, MessageResource messageResource,
-                        ProfileRepository profileRepository) {
+    public ChatResource(
+        ChatRepository chatRepository,
+        ProfileResource profileResource,
+        MessageResource messageResource,
+        ProfileRepository profileRepository
+    ) {
         this.chatRepository = chatRepository;
         this.profileResource = profileResource;
         this.messageResource = messageResource;
@@ -149,8 +153,7 @@ public class ChatResource {
 
     @NotGenerated
     @PostMapping("/request-chat-with-profile/{id}")
-    public ResponseEntity<Chat> requestFriend(@PathVariable(value="id") Long id) throws URISyntaxException {
-
+    public ResponseEntity<Chat> requestFriend(@PathVariable(value = "id") Long id) throws URISyntaxException {
         String currentLogin = SecurityUtils.getCurrentUserLogin().orElse(null);
         Profile currentProfile = profileRepository.findByUserIsCurrentUser().stream().findFirst().orElse(null);
         Profile requestedProfile = profileResource.getProfile(id).getBody();
@@ -158,16 +161,21 @@ public class ChatResource {
         Message message = new Message().content("I would like to chat");
         message = messageResource.createMessage(message).getBody(); // will have initiatorName and time data
 
-        Chat chat = new Chat().initiatorName(currentLogin).accepted(false).addChat(message)
-            .addProfile(currentProfile).addProfile(requestedProfile);
+        Chat chat = new Chat()
+            .initiatorName(currentLogin)
+            .accepted(false)
+            .addChat(message)
+            .addProfile(currentProfile)
+            .addProfile(requestedProfile);
         return createChat(chat);
     }
 
     @NotGenerated
     @PatchMapping(value = "/{id}/accept")
-    public ResponseEntity<Profile> acceptChat(@PathVariable(value = "id", required = false) final Long id)
-        throws URISyntaxException {
-        Chat chat = chatRepository.findById(id).orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+    public ResponseEntity<Profile> acceptChat(@PathVariable(value = "id", required = false) final Long id) throws URISyntaxException {
+        Chat chat = chatRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         chat.accepted(true);
         chatRepository.save(chat);
         Profile requesterProfile = profileResource.getProfileByLogin(chat.getInitiatorName());
@@ -180,7 +188,9 @@ public class ChatResource {
     @PatchMapping(value = "/{id}/message", consumes = { "application/json", "application/merge-patch+json" })
     public ResponseEntity<Message> messageInChat(@PathVariable(value = "id", required = false) final Long id, @RequestBody Message message)
         throws URISyntaxException {
-        Chat chat = chatRepository.findById(id).orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
+        Chat chat = chatRepository
+            .findById(id)
+            .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         ResponseEntity<Message> messageResponse = messageResource.createMessage(message);
         chat.addChat(messageResponse.getBody());
         partialUpdateChat(id, chat);
@@ -195,7 +205,17 @@ public class ChatResource {
     @GetMapping("")
     public List<Chat> getAllChats() {
         LOG.debug("REST request to get all Chats");
-        return chatRepository.findAllByCurrentProfile(SecurityUtils.getCurrentUserLogin().orElseThrow());
+        List<Chat> chats = chatRepository.findAllByCurrentProfile(SecurityUtils.getCurrentUserLogin().orElseThrow());
+        customGetAllChats(chats);
+        System.out.println("chat profiles: " + chats.stream().map(Chat::getProfiles).toList());
+        return chats;
+    }
+
+    @NotGenerated
+    void customGetAllChats(List<Chat> chats) {
+        for (Chat chat : chats) {
+            chat.setProfiles(chat.getProfiles());
+        }
     }
 
     /**
@@ -208,7 +228,14 @@ public class ChatResource {
     public ResponseEntity<Chat> getChat(@PathVariable("id") Long id) {
         LOG.debug("REST request to get Chat : {}", id);
         Optional<Chat> chat = chatRepository.findById(id);
+        fetchEntities(chat.orElseThrow());
         return ResponseUtil.wrapOrNotFound(chat);
+    }
+
+    @NotGenerated
+    void fetchEntities(Chat chat) {
+        chat.setProfiles(chat.getProfiles());
+        chat.setChats(chat.getChats());
     }
 
     /**

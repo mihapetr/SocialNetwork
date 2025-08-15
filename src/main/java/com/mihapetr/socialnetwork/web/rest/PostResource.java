@@ -18,7 +18,6 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -76,9 +75,14 @@ public class PostResource {
 
     void customCreatePost(Post post) {
         post.time(ZonedDateTime.now());
-        post.setProfile(profileRepository.findByUserLogin(
-            SecurityUtils.getCurrentUserLogin().orElseThrow(() -> new BadRequestAlertException("Could not get current login", ENTITY_NAME, "currentLoginFail"))
-        ).orElseThrow(() -> new BadRequestAlertException("Profile not found", ENTITY_NAME, "profilenotfound")));
+        post.setProfile(
+            profileRepository
+                .findByUserLogin(
+                    SecurityUtils.getCurrentUserLogin()
+                        .orElseThrow(() -> new BadRequestAlertException("Could not get current login", ENTITY_NAME, "currentLoginFail"))
+                )
+                .orElseThrow(() -> new BadRequestAlertException("Profile not found", ENTITY_NAME, "profilenotfound"))
+        );
     }
 
     /**
@@ -159,12 +163,23 @@ public class PostResource {
                 return existingPost;
             })
             .map(postRepository::save);
-        result.orElseThrow().setComments(
-            result.orElseThrow().getComments().stream().map(c -> {
-                c.setParent(c.getParent()); return c;
-            }).collect(Collectors.toSet())
+        result
+            .orElseThrow()
+            .setComments(
+                result
+                    .orElseThrow()
+                    .getComments()
+                    .stream()
+                    .map(c -> {
+                        c.setParent(c.getParent());
+                        return c;
+                    })
+                    .collect(Collectors.toSet())
+            );
+        System.out.println(
+            "Post (result) comments after patching: " +
+            result.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet())
         );
-        System.out.println("Post (result) comments after patching: " + result.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet()));
         return ResponseUtil.wrapOrNotFound(
             result,
             HeaderUtil.createEntityUpdateAlert(applicationName, false, ENTITY_NAME, post.getId().toString())
@@ -180,9 +195,7 @@ public class PostResource {
     ) throws URISyntaxException {
         String currentLogin = SecurityUtils.getCurrentUserLogin().orElseThrow();
         message.time(ZonedDateTime.now()).senderName(currentLogin);
-        Comment comment = new Comment().parent(message).profile(
-            profileRepository.findByUserLogin(currentLogin).orElseThrow()
-        );
+        Comment comment = new Comment().parent(message).profile(profileRepository.findByUserLogin(currentLogin).orElseThrow());
         Post post = postRepository.findById(id).orElseThrow();
         post.comment(comment);
         comment = commentResource.createComment(comment).getBody();
@@ -213,22 +226,28 @@ public class PostResource {
         LOG.debug("REST request to get Post : {}", id);
         Optional<Post> post = postRepository.findById(id);
         fetchEntities(post.orElseThrow());
+        System.out.println("Post comments before returning it: " + post.orElseThrow().getComments());
         System.out.println(
-            "Post comments before returning it: " + post.orElseThrow().getComments()
-        );
-        System.out.println(
-          "Post messages before returning it: " + post.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet())
+            "Post messages before returning it: " +
+            post.orElseThrow().getComments().stream().map(Comment::getParent).collect(Collectors.toSet())
         );
         return ResponseUtil.wrapOrNotFound(post);
     }
 
     @NotGenerated
     void fetchEntities(Post post) {
-        post.setComments(post.getComments().stream().map(comment -> {
-            comment.setParent(comment.getParent());
-            comment.setProfile(comment.getProfile());
-            return comment;
-        }).collect(Collectors.toSet()));
+        post.setProfile(post.getProfile());
+        post.setComments(
+            post
+                .getComments()
+                .stream()
+                .map(comment -> {
+                    comment.setParent(comment.getParent());
+                    comment.setProfile(comment.getProfile());
+                    return comment;
+                })
+                .collect(Collectors.toSet())
+        );
     }
 
     /**

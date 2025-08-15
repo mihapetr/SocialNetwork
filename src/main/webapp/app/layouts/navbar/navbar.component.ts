@@ -23,10 +23,12 @@ export default class NavbarComponent implements OnInit {
   version = '';
   account = inject(AccountService).trackCurrentAccount();
   entitiesNavbarItems: NavbarItem[] = [];
+  currentProfileId = -1;
 
   private readonly loginService = inject(LoginService);
   private readonly profileService = inject(ProfileService);
   private readonly router = inject(Router);
+  private accountService = inject(AccountService);
 
   constructor() {
     const { VERSION } = environment;
@@ -40,6 +42,9 @@ export default class NavbarComponent implements OnInit {
     this.profileService.getProfileInfo().subscribe(profileInfo => {
       this.inProduction = profileInfo.inProduction;
       this.openAPIEnabled = profileInfo.openAPIEnabled;
+    });
+    this.accountService.identity().subscribe(account => {
+      this.accountService.profileByLogin(account?.login).subscribe(profile => (this.currentProfileId = profile.id));
     });
   }
 

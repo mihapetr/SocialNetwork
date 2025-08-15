@@ -19,7 +19,7 @@
           <dt><span></span></dt>
           <dd class="row">
             <span class="col text-start" style="text-align: right">
-              <img [src]="postRef.profile?.picture" />
+              <img [src]="'data:' + 'image/png' + ';base64,' + postRef.profile?.picture" style="display: inline; max-width: 50px" />
               <a [routerLink]="['/profile', post()!.profile?.id, 'view']">{{ postRef.profile?.user?.login }}</a>
             </span>
             <span class="col text-end">{{ postRef.time | formatMediumDatetime }}</span>
