@@ -184,5 +184,7 @@ public class Chat implements Serializable {
             "}";
     }
 
-    void message(String content) {}
+    public void message(Message message) {
+        addChat(message);
+    }
 }

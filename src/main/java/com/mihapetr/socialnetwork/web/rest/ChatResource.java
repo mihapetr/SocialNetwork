@@ -192,7 +192,8 @@ public class ChatResource {
             .findById(id)
             .orElseThrow(() -> new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound"));
         ResponseEntity<Message> messageResponse = messageResource.createMessage(message);
-        chat.addChat(messageResponse.getBody());
+        //chat.addChat(messageResponse.getBody());
+        chat.message(messageResponse.getBody());
         partialUpdateChat(id, chat);
         return messageResponse;
     }

@@ -16,6 +16,23 @@ example mid dev:
 ( 317 + 96 ) / 23057 = 0.0179121308 ~ 1,79%
 contribution > 98% (lines estimation, not precise)
 
+# FINAL RESULTS
+
+## SocialNetwork
+
+git diff --shortstat 99e1454 HEAD -- src/main/webapp
+25 files changed, 705 insertions(+), 237 deletions(-)
+
+git ls-files src/main/webapp | xargs wc -l
+23304 total
+
+# MHipster
+
+git diff --shortstat e83a578 HEAD -- src/main/webapp
+46 files changed, 1038 insertions(+), 292 deletions(-)
+
+git ls-files src/main/webapp | xargs wc -l
+27016 total
 
 # TODO DOKUMENTACIJA
 

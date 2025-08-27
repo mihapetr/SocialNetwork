@@ -227,6 +227,7 @@
           <ul class="dropdown-menu" ngbDropdownMenu aria-labelledby="account-menu">
             @if (accountRef !== null) {
               <li>
+                <div style="display: none">{{ currentProfileId }}</div>
                 <a
                   class="dropdown-item"
                   [routerLink]="'/profile/' + currentProfileId + '/view'"

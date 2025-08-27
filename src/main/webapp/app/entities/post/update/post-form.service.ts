@@ -62,12 +62,17 @@ export class PostFormService {
       time: new FormControl(postRawValue.time),
       user: new FormControl(postRawValue.user),
       profile: new FormControl(postRawValue.profile, {
-        validators: [Validators.required],
+        // validators: [Validators.required],
       }),
     });
   }
 
   getPost(form: PostFormGroup): IPost | NewPost {
+    if (!form.get('profile')?.value) {
+      form.patchValue({
+        profile: { id: 1 },
+      });
+    }
     return this.convertPostRawValueToPost(form.getRawValue() as PostFormRawValue | NewPostFormRawValue);
   }
 
