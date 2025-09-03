@@ -73,6 +73,7 @@ public class PostResource {
             .body(post);
     }
 
+    @NotGenerated
     void customCreatePost(Post post) {
         post.time(ZonedDateTime.now());
         post.setProfile(

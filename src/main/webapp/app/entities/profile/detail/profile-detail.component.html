@@ -14,7 +14,7 @@
           }
           <span>{{ profileRef.user?.login }}</span>
 
-          @if (!friends()) {
+          @if (!friends() && account()?.login != profileRef.user?.login && !requested) {
             <button type="button" (click)="requestChat(profileRef.id)" class="btn btn-primary ms-auto">
               <span>Request</span>
             </button>

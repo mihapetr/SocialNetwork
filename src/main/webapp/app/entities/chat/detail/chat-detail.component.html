@@ -20,7 +20,7 @@
 
         <jhi-alert-error></jhi-alert-error>
 
-        <jhi-alert></jhi-alert>
+        <div style="display: none"><jhi-alert></jhi-alert></div>
 
         <dl style="display: none" class="row-md jh-entity-details">
           <dt><span>ID</span></dt>
@@ -61,7 +61,7 @@
 
         <dt></dt>
         <tbody>
-          @for (m of chatRef.chats; track m) {
+          @for (m of localMessages(); track m) {
             <tr class="border-top border-bottom">
               <td colspan="3" class="text-start py-2">
                 <span class="text-muted me-2">{{ formatDateTime(m?.time + '') }}</span>

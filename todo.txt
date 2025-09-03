@@ -1,0 +1,6 @@
+JHip UML deprecated note
+refreshing functionality in webapp
+dovrši UML -> JDL
+GitHub description app vezan uz diplomski i upute kako se pokrene i kako naći (naslov, PMF,...)
+accessed note u .bib bitan
+naglasak da je cucumber za backend

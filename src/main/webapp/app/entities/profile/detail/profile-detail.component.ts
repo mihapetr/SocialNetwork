@@ -24,6 +24,7 @@ export class ProfileDetailComponent {
   account = inject(AccountService).trackCurrentAccount();
 
   map = new Map<string, IProfile>();
+  requested = false;
 
   protected dataUtils = inject(DataUtils);
   protected profileService = inject(ProfileService);
@@ -60,6 +61,7 @@ export class ProfileDetailComponent {
 
   requestChat(id: number): void {
     this.subscribeToRequestChatResponse(this.profileService.requestChat(id));
+    this.requested = true;
   }
 
   friends(): boolean {

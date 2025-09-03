@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, EventEmitter, inject, input, Output, signal, WritableSignal, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
@@ -16,12 +16,19 @@ import { finalize } from 'rxjs/operators';
   templateUrl: './post-detail.component.html',
   imports: [SharedModule, RouterModule, FormatMediumDatetimePipe, FormsModule],
 })
-export class PostDetailComponent {
+export class PostDetailComponent implements OnInit {
   post = input<IPost | null>(null);
 
   commentText = '';
+  localPost: WritableSignal<IPost | null> = signal(null);
+
   protected dataUtils = inject(DataUtils);
   protected postService = inject(PostService);
+
+  ngOnInit(): void {
+    // Initialize local writable signal with initial data from route resolver input signal
+    this.localPost.set(this.post());
+  }
 
   byteSize(base64String: string): string {
     return this.dataUtils.byteSize(base64String);
@@ -69,8 +76,9 @@ export class PostDetailComponent {
   }
 
   protected onSaveSuccess(updatedPost: IPost): void {
-    this.commentText = ''; // clear input
-    this.post.bind(updatedPost); // update bound post signal
+    this.commentText = '';
+    // Update the writable post signal with the updated post to refresh UI
+    this.localPost.set(updatedPost);
   }
 
   protected onSaveError(): void {

@@ -1,26 +1,46 @@
-import { Component, inject, input } from '@angular/core';
+import { Component, inject, input, signal, WritableSignal, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 import SharedModule from 'app/shared/shared.module';
 import { IChat } from '../chat.model';
 import { AccountService } from '../../../core/auth/account.service';
 import { FormsModule } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { Observable, Subscription, switchMap, timer } from 'rxjs';
 import { HttpResponse } from '@angular/common/http';
 import { IPost } from '../../post/post.model';
 import { ChatService } from '../service/chat.service';
+import { IMessage } from '../../message/message.model';
 
 @Component({
   selector: 'jhi-chat-detail',
   templateUrl: './chat-detail.component.html',
   imports: [SharedModule, RouterModule, FormsModule],
 })
-export class ChatDetailComponent {
+export class ChatDetailComponent implements OnInit {
   chat = input<IChat | null>(null);
   account = inject(AccountService).trackCurrentAccount();
+  localMessages: WritableSignal<IMessage[] | null | undefined> = signal(null);
 
   messageText = '';
   protected chatService = inject(ChatService);
+  private pollingSubscription?: Subscription;
+
+  ngOnInit(): void {
+    // Initialize local writable signal with initial data from route resolver input signal
+    this.localMessages.set(this.chat()?.chats);
+
+    this.pollingSubscription = timer(0, 1000)
+      .pipe(switchMap(() => this.chatService.find(this.chat()!.id)))
+      .subscribe({
+        next: response => {
+          this.localMessages.set(response.body?.chats); // Process/update component data
+        },
+        error(error) {
+          console.error('Polling error', error);
+          // Optionally handle errors, stop polling, etc.
+        },
+      });
+  }
 
   formatDateTime(isoString: string): string {
     const date = new Date(isoString);
